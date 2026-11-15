@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>LoketKu — Kasir Top-Up DANA &amp; Buku Kasbon</title>
+
+  <!-- PWA & Mobile Home Screen Meta Tags -->
+  <meta name="theme-color" content="#0284C7" id="metaThemeColor" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="LoketKu" />
+  <meta name="description" content="Aplikasi kasir top-up DANA, pulsa, transfer bank, tarik tunai, dan buku kasbon anti-minus." />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230EA5E9'/%3E%3Cstop offset='55%25' stop-color='%230284C7'/%3E%3Cstop offset='100%25' stop-color='%231D4ED8'/%3E%3C/linearGradient%3E%3ClinearGradient id='gold' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23FDE047'/%3E%3Cstop offset='100%25' stop-color='%23F59E0B'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23bg)'/%3E%3Crect x='14' y='15' width='32' height='16' rx='6' fill='rgba(255,255,255,0.45)'/%3E%3Crect x='11' y='21' width='42' height='28' rx='8' fill='%23FFFFFF'/%3E%3Crect x='37' y='29' width='18' height='12' rx='6' fill='%23E0F2FE'/%3E%3Ccircle cx='43' cy='35' r='3.6' fill='url(%23gold)'/%3E%3Cpath d='M24.5 27L19.5 35H24L22.5 43L29.5 34H25L24.5 27Z' fill='%230284C7'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+
+  <style>
+    /* ==========================================================================
+       1. DESIGN TOKENS ("FINTECH DAYLIGHT" & "DARK TERMINAL")
+       ========================================================================== */
+    :root {
+      --outer-bg: #E2E8F0;
+      --bg-app: #F1F5F9;
+      --bg-surface: #FFFFFF;
+      --bg-surface-alt: #F8FAFC;
+      --bg-glass: rgba(255, 255, 255, 0.90);
+      --border-1px: rgba(15, 23, 42, 0.09);
+      --border-strong: rgba(15, 23, 42, 0.16);
+
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #94A3B8;
+
+      --dana: #0284C7;
+      --dana-deep: #0369A1;
+      --dana-tint: #E0F2FE;
+      --dana-glow: rgba(2, 132, 199, 0.26);
+
+      --cash: #059669;
+      --cash-tint: #D1FAE5;
+
+      --profit: #D97706;
+      --profit-tint: #FEF3C7;
+
+      --danger: #E11D48;
+      --danger-tint: #FFE4E9;
+
+      --hud-grid: rgba(2, 132, 199, 0.05);
+      --shadow-card: 0 2px 10px rgba(15, 23, 42, 0.04);
+      --shadow-shell: 0 20px 60px rgba(15, 23, 42, 0.12);
+      --shadow-sheet: 0 -12px 40px rgba(15, 23, 42, 0.18);
+
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --radius-pill: 9999px;
+
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --nav-height: 66px;
+    }
+
+    [data-theme="dark"] {
+      --outer-bg: #030712;
+      --bg-app: #0B1120;
+      --bg-surface: #111827;
+      --bg-surface-alt: #1E293B;
+      --bg-glass: rgba(17, 24, 39, 0.90);
+      --border-1px: rgba(56, 189, 248, 0.14);
+      --border-strong: rgba(56, 189, 248, 0.28);
+
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+
+      --dana: #38BDF8;
+      --dana-deep: #0284C7;
+      --dana-tint: rgba(56, 189, 248, 0.16);
+      --dana-glow: rgba(56, 189, 248, 0.28);
+
+      --cash: #34D399;
+      --cash-tint: rgba(52, 211, 153, 0.16);
+
+      --profit: #FBBF24;
+      --profit-tint: rgba(251, 191, 36, 0.16);
+
+      --danger: #FB7185;
+      --danger-tint: rgba(251, 113, 133, 0.16);
+
+      --hud-grid: rgba(56, 189, 248, 0.05);
+      --shadow-card: 0 4px 18px rgba(0, 0, 0, 0.35);
+      --shadow-shell: 0 24px 70px rgba(0, 0, 0, 0.65);
+      --shadow-sheet: 0 -16px 48px rgba(0, 0, 0, 0.72);
+    }
+
+    /* ==========================================================================
+       2. RESET & SPLASH SCREEN ENTRANCE ANIMATION
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      background-color: var(--outer-bg);
+      font-family: var(--font-sans);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at 30% 20%, #0EA5E9 0%, #0284C7 48%, #0F172A 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .splash-screen.hide {
+      opacity: 0;
+      transform: scale(1.06);
+      pointer-events: none;
+    }
+
+    .splash-ring {
+      position: relative;
+      width: 102px;
+      height: 102px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 50px rgba(2, 132, 199, 0.6), 0 0 0 1.5px rgba(255, 255, 255, 0.3);
+      animation: logoPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, logoFloat 2.2s ease-in-out 0.8s infinite;
+    }
+
+    .splash-ring::after {
+      content: "";
+      position: absolute;
+      inset: -12px;
+      border-radius: 38px;
+      border: 2px solid rgba(255, 255, 255, 0.32);
+      animation: pulseRing 1.6s ease-out infinite;
+    }
+
+    @keyframes logoPop {
+      0% { opacity: 0; transform: scale(0.45) translateY(24px) rotate(-6deg); }
+      100% { opacity: 1; transform: scale(1) translateY(0) rotate(0deg); }
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes pulseRing {
+      0% { transform: scale(0.94); opacity: 0.85; }
+      100% { transform: scale(1.26); opacity: 0; }
+    }
+
+    .splash-title {
+      margin-top: 20px;
+      font-size: 1.65rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      animation: fadeUpText 0.6s 0.2s ease both;
+    }
+
+    .splash-sub {
+      margin-top: 4px;
+      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.86);
+      font-weight: 600;
+      animation: fadeUpText 0.6s 0.32s ease both;
+    }
+
+    .splash-loader {
+      width: 156px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.22);
+      margin-top: 26px;
+      overflow: hidden;
+      animation: fadeUpText 0.5s 0.4s ease both;
+    }
+
+    .splash-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #FDE047, #FFFFFF);
+      animation: loadFill 1.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    @keyframes fadeUpText {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes loadFill {
+      0% { width: 0%; }
+      55% { width: 76%; }
+      100% { width: 100%; }
+    }
+
+    /* Staggered Dashboard Entrance after Splash */
+    .app-ready .anim-enter-1 { animation: cardSlideIn 0.45s 0.05s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .app-ready .anim-enter-2 { animation: cardSlideIn 0.45s 0.14s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .app-ready .anim-enter-3 { animation: cardSlideIn 0.45s 0.23s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .app-ready .anim-enter-4 { animation: cardSlideIn 0.45s 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+    @keyframes cardSlideIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ==========================================================================
+       3. RESPONSIVE SHELL (HP & TABLET)
+       ========================================================================== */
+    .app-shell {
+      width: 100%;
+      max-width: 560px;
+      min-height: 100dvh;
+      margin: 0 auto;
+      background-color: var(--bg-app);
+      background-image:
+        linear-gradient(to right, var(--hud-grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--hud-grid) 1px, transparent 1px);
+      background-size: 24px 24px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-shell);
+      border-left: 1px solid var(--border-1px);
+      border-right: 1px solid var(--border-1px);
+    }
+
+    @media (max-width: 560px) {
+      .app-shell { border-left: none; border-right: none; box-shadow: none; }
+    }
+
+    .mono-num {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.03em;
+    }
+
+    button, input, select {
+      font-family: inherit;
+      color: inherit;
+      border: none;
+      background: none;
+    }
+
+    button { cursor: pointer; }
+
+    /* ==========================================================================
+       4. STICKY HEADER & MODERN WALLET EMBLEM
+       ========================================================================== */
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      padding: calc(10px + var(--safe-top)) 16px 10px;
+      background: var(--bg-glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-1px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brand-box { display: flex; align-items: center; gap: 10px; }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px var(--dana-glow);
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-title {
+      font-size: 1rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .audit-badge {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      background: var(--cash-tint);
+      color: var(--cash);
+    }
+
+    .brand-sub {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      margin-top: 1px;
+    }
+
+    .hdr-actions { display: flex; align-items: center; gap: 6px; }
+
+    .pill-btn {
+      height: 33px;
+      padding: 0 11px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-1px);
+      font-size: 0.74rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pill-btn:active { transform: scale(0.95); }
+
+    /* ==========================================================================
+       5. MAIN VIEWPORT & BALANCE CARDS
+       ========================================================================== */
+    .main-view {
+      flex: 1;
+      padding: 14px 15px calc(var(--nav-height) + var(--safe-bottom) + 22px);
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    .tab-pane { display: none; flex-direction: column; gap: 13px; }
+    .tab-pane.active { display: flex; }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-1px);
+      border-radius: var(--radius-lg);
+      padding: 15px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .asset-master-card {
+      background: linear-gradient(145deg, var(--bg-surface) 30%, var(--dana-tint) 100%);
+      border: 1px solid var(--border-strong);
+      padding: 15px;
+    }
+
+    .master-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.74rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .master-val {
+      font-size: 1.65rem;
+      font-weight: 800;
+      margin: 4px 0 10px;
+      color: var(--text-primary);
+    }
+
+    .split-bar-legend {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.71rem;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border-strong);
+      color: var(--text-secondary);
+    }
+
+    .wallet-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .wallet-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-1px);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .wallet-card.profit-wide {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      background: linear-gradient(135deg, var(--bg-surface) 45%, var(--profit-tint) 100%);
+      border-color: rgba(217, 119, 6, 0.25);
+    }
+
+    .w-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .w-amount {
+      font-size: 1.08rem;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .w-subhint {
+      font-size: 0.64rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+
+    .w-btn {
+      height: 30px;
+      padding: 0 10px;
+      border-radius: 8px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .w-btn.dana { background: var(--dana-tint); color: var(--dana-deep); }
+    [data-theme="dark"] .w-btn.dana { color: var(--dana); }
+    .w-btn.cash { background: var(--cash-tint); color: var(--cash); }
+    .w-btn.profit { background: var(--profit); color: #FFFFFF; }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+    }
+
+    .q-tile {
+      padding: 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-1px);
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-card);
+      transition: transform 0.14s ease, border-color 0.14s ease;
+    }
+
+    .q-tile:active { transform: scale(0.97); border-color: var(--dana); }
+
+    .q-emoji {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .q-title { font-size: 0.8rem; font-weight: 800; }
+    .q-sub { font-size: 0.68rem; color: var(--text-secondary); margin-top: 1px; }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .section-title { font-size: 0.9rem; font-weight: 800; }
+
+    .tx-card {
+      padding: 11px 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-1px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .tx-left { min-width: 0; flex: 1; }
+    .tx-top-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .tag-pill {
+      font-size: 0.62rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 6px;
+    }
+    .tag-pill.lunas { background: var(--cash-tint); color: var(--cash); }
+    .tag-pill.kasbon { background: var(--danger-tint); color: var(--danger); }
+    .tag-pill.internal { background: var(--dana-tint); color: var(--dana-deep); }
+    [data-theme="dark"] .tag-pill.internal { color: var(--dana); }
+
+    .tx-sub {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tx-right { text-align: right; flex-shrink: 0; }
+    .tx-nominal { font-size: 0.86rem; font-weight: 800; }
+    .tx-profit-tag {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--cash);
+      margin-top: 2px;
+    }
+
+    .del-tiny {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: var(--bg-surface-alt);
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      margin-left: 4px;
+    }
+    .del-tiny:hover { color: var(--danger); }
+
+    /* ==========================================================================
+       6. BOTTOM NAVIGATION
+       ========================================================================== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 560px;
+      height: calc(var(--nav-height) + var(--safe-bottom));
+      padding: 0 12px var(--safe-bottom);
+      background: var(--bg-glass);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-top: 1px solid var(--border-1px);
+      z-index: 40;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1.25fr;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-btn {
+      height: 50px;
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .nav-btn.active { color: var(--dana); }
+
+    .nav-cta {
+      height: 44px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, var(--dana), var(--dana-deep));
+      color: #FFFFFF;
+      font-size: 0.8rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      box-shadow: 0 6px 16px var(--dana-glow);
+    }
+
+    /* ==========================================================================
+       7. BOTTOM-SHEET MODALS & FORM CONTROLS
+       ========================================================================== */
+    .sheet-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(5, 12, 24, 0.60);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .sheet-backdrop.open { display: flex; }
+
+    .bottom-sheet {
+      width: 100%;
+      max-width: 560px;
+      max-height: 92dvh;
+      overflow-y: auto;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-strong);
+      border-top-left-radius: var(--radius-xl);
+      border-top-right-radius: var(--radius-xl);
+      padding: 10px 18px calc(20px + var(--safe-bottom));
+      box-shadow: var(--shadow-sheet);
+      animation: slideUp 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .sheet-handle {
+      width: 38px;
+      height: 4px;
+      border-radius: var(--radius-pill);
+      background: var(--border-strong);
+      margin: 0 auto 12px;
+    }
+
+    .sheet-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .sheet-title { font-size: 1rem; font-weight: 800; }
+
+    .close-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--bg-surface-alt);
+      border: 1px solid var(--border-1px);
+      font-weight: 800;
+    }
+
+    .f-group { margin-bottom: 11px; }
+    .f-label {
+      display: block;
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .f-input {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface-alt);
+      border: 1px solid var(--border-strong);
+      font-size: 0.9rem;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .f-input:focus { border-color: var(--dana); }
+
+    .f-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .chip-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .mini-chip {
+      height: 30px;
+      border-radius: 8px;
+      background: var(--dana-tint);
+      color: var(--dana-deep);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+    [data-theme="dark"] .mini-chip { color: var(--dana); }
+
+    .seg-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .seg-opt {
+      min-height: 42px;
+      padding: 4px 6px;
+      border-radius: 9px;
+      background: var(--bg-surface-alt);
+      border: 1px solid var(--border-1px);
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.2;
+    }
+
+    .seg-opt small {
+      font-size: 0.6rem;
+      font-weight: 600;
+      opacity: 0.85;
+    }
+
+    .seg-opt.active {
+      background: var(--dana);
+      border-color: var(--dana);
+      color: #FFFFFF;
+    }
+
+    .seg-opt.active-kasbon {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: #FFFFFF;
+    }
+
+    .calc-preview {
+      padding: 11px 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-surface-alt);
+      border: 1px solid var(--border-strong);
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 0.76rem;
+    }
+
+    .cp-row { display: flex; justify-content: space-between; }
+
+    .err-box {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--danger);
+      min-height: 18px;
+      margin-bottom: 8px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--dana), var(--dana-deep));
+      color: #FFFFFF;
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .btn-wa {
+      height: 32px;
+      padding: 0 10px;
+      border-radius: 8px;
+      background: #16A34A;
+      color: #FFFFFF;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .btn-lunasi {
+      height: 32px;
+      padding: 0 10px;
+      border-radius: 8px;
+      background: var(--dana);
+      color: #FFFFFF;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .toast {
+      position: fixed;
+      top: calc(62px + var(--safe-top));
+      left: 50%;
+      transform: translateX(-50%) translateY(-10px);
+      z-index: 120;
+      background: var(--text-primary);
+      color: var(--bg-surface);
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 0.76rem;
+      font-weight: 700;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       SPLASH INTRO ANIMATION (2.0 DETIK SAAT MASUK APLIKASI)
+       ======================================================================== -->
+  <div class="splash-screen" id="splashIntro" aria-hidden="true">
+    <div class="splash-ring">
+      <svg width="102" height="102" viewBox="0 0 64 64" fill="none">
+        <defs>
+          <linearGradient id="spBg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#38BDF8" />
+            <stop offset="55%" stop-color="#0284C7" />
+            <stop offset="100%" stop-color="#1D4ED8" />
+          </linearGradient>
+          <linearGradient id="spGold" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#FDE047" />
+            <stop offset="100%" stop-color="#F59E0B" />
+          </linearGradient>
+        </defs>
+        <rect width="64" height="64" rx="20" fill="url(#spBg)" />
+        <circle cx="52" cy="12" r="20" fill="rgba(255,255,255,0.12)" />
+        <rect x="14" y="15" width="32" height="16" rx="6" fill="rgba(255,255,255,0.45)" />
+        <rect x="11" y="21" width="42" height="28" rx="8" fill="#FFFFFF" />
+        <rect x="37" y="29" width="18" height="12" rx="6" fill="#E0F2FE" />
+        <circle cx="43" cy="35" r="3.6" fill="url(#spGold)" />
+        <path d="M24.5 27L19.5 35H24L22.5 43L29.5 34H25L24.5 27Z" fill="#0284C7" />
+      </svg>
+    </div>
+    <div class="splash-title">LoketKu</div>
+    <div class="splash-sub">Kasir Top-Up DANA &amp; Buku Kasbon</div>
+    <div class="splash-loader"><div class="splash-bar"></div></div>
+  </div>
+
+  <div class="app-shell">
+    <!-- STICKY TOP HEADER -->
+    <header class="top-header">
+      <div class="brand-box">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 64 64" fill="none">
+            <defs>
+              <linearGradient id="hdrBg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#0EA5E9" />
+                <stop offset="55%" stop-color="#0284C7" />
+                <stop offset="100%" stop-color="#1D4ED8" />
+              </linearGradient>
+              <linearGradient id="hdrGold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#FDE047" />
+                <stop offset="100%" stop-color="#F59E0B" />
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="14" fill="url(#hdrBg)" />
+            <circle cx="52" cy="12" r="20" fill="rgba(255,255,255,0.12)" />
+            <rect x="14" y="15" width="32" height="16" rx="6" fill="rgba(255,255,255,0.45)" />
+            <rect x="11" y="21" width="42" height="28" rx="8" fill="#FFFFFF" />
+            <rect x="37" y="29" width="18" height="12" rx="6" fill="#E0F2FE" />
+            <circle cx="43" cy="35" r="3.6" fill="url(#hdrGold)" />
+            <path d="M24.5 27L19.5 35H24L22.5 43L29.5 34H25L24.5 27Z" fill="#0284C7" />
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">
+            <span>LoketKu</span>
+            <span class="audit-badge" id="auditBadge">✓ SEIMBANG</span>
+          </div>
+          <div class="brand-sub">1 Akun DANA • Anti-Minus</div>
+        </div>
+      </div>
+
+      <div class="hdr-actions">
+        <button type="button" class="pill-btn" id="btnThemeToggle">
+          <span id="themeIcon">🌙</span>
+          <span id="themeText">Dark</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-view">
+
+      <!-- ==================================================================
+           TAB 1: BERANDA
+           ================================================================== -->
+      <div class="tab-pane active" id="tabBeranda">
+
+        <section class="card asset-master-card anim-enter-1">
+          <div class="master-top">
+            <span>Total Aset Usaha (DANA + Laci + Kasbon)</span>
+            <span class="mono-num" id="piutangMiniBadge">Kasbon: Rp 0</span>
+          </div>
+          <div class="master-val mono-num" id="totalAssetVal">Rp 0</div>
+          <div class="split-bar-legend mono-num">
+            <span>Modal Putar: <strong id="lockedCapitalVal">Rp 0</strong></span>
+            <span>Profit Bersih: <strong style="color:var(--cash);" id="netProfitMasterVal">Rp 0</strong></span>
+          </div>
+        </section>
+
+        <section class="wallet-grid anim-enter-2">
+          <div class="wallet-card">
+            <div>
+              <div class="w-label">💙 Saldo Akun DANA</div>
+              <div class="w-amount mono-num" style="color:var(--dana);" id="danaBalVal">Rp 0</div>
+              <div class="w-subhint" id="danaBreakdownHint">Saldo siap kirim di aplikasi DANA</div>
+            </div>
+            <button type="button" class="w-btn dana" id="btnTopupDana">+ Isi Saldo DANA</button>
+          </div>
+
+          <div class="wallet-card">
+            <div>
+              <div class="w-label">💵 Tunai di Laci</div>
+              <div class="w-amount mono-num" style="color:var(--cash);" id="cashBalVal">Rp 0</div>
+              <div class="w-subhint">Uang cash fisik di tangan</div>
+            </div>
+            <button type="button" class="w-btn cash" id="btnAddCapital">+ Tambah Modal</button>
+          </div>
+
+          <div class="wallet-card profit-wide">
+            <div>
+              <div class="w-label">🏆 Keuntungan Bersih (Siap Ambil)</div>
+              <div class="w-amount mono-num" style="color:var(--profit);" id="availProfitVal">Rp 0</div>
+              <div style="font-size:0.68rem;color:var(--text-secondary);margin-top:2px;">
+                Terpisah dari modal putar agar tidak minus
+              </div>
+            </div>
+            <button type="button" class="w-btn profit" id="btnWithdrawProfit">Ambil Profit</button>
+          </div>
+        </section>
+
+        <section class="quick-grid anim-enter-3">
+          <button type="button" class="q-tile" data-open-service="tf_dana">
+            <div class="q-emoji" style="background:var(--dana-tint);">💸</div>
+            <div>
+              <div class="q-title">TF DANA ke DANA</div>
+              <div class="q-sub">Biaya App Rp 0</div>
+            </div>
+          </button>
+
+          <button type="button" class="q-tile" data-open-service="tf_bank">
+            <div class="q-emoji" style="background:var(--dana-tint);">🏦</div>
+            <div>
+              <div class="q-title">TF Bank / E-Wallet</div>
+              <div class="q-sub">BCA, BRI, GoPay, OVO</div>
+            </div>
+          </button>
+
+          <button type="button" class="q-tile" data-open-service="pulsa_pln">
+            <div class="q-emoji" style="background:var(--profit-tint);">⚡</div>
+            <div>
+              <div class="q-title">Pulsa / Data / PLN</div>
+              <div class="q-sub">Potong Saldo DANA</div>
+            </div>
+          </button>
+
+          <button type="button" class="q-tile" data-open-service="tarik_tunai">
+            <div class="q-emoji" style="background:var(--cash-tint);">💵</div>
+            <div>
+              <div class="q-title">Tarik Tunai</div>
+              <div class="q-sub">Masuk DANA, Keluar Laci</div>
+            </div>
+          </button>
+        </section>
+
+        <section class="anim-enter-4">
+          <div class="section-head">
+            <h2 class="section-title">Mutasi Transaksi Terbaru</h2>
+            <span style="font-size:0.72rem;color:var(--text-secondary);" id="txTotalCount">0 transaksi</span>
+          </div>
+          <div id="recentTxList" style="display:flex;flex-direction:column;gap:8px;"></div>
+        </section>
+
+      </div>
+
+      <!-- ==================================================================
+           TAB 2: BUKU KASBON
+           ================================================================== -->
+      <div class="tab-pane" id="tabKasbon">
+        <section class="card" style="background:linear-gradient(135deg, var(--bg-surface), var(--danger-tint));">
+          <div style="font-size:0.75rem;font-weight:700;color:var(--text-secondary);">Total Piutang Kasbon Belum Lunas</div>
+          <div class="mono-num" style="font-size:1.55rem;font-weight:800;color:var(--danger);margin-top:4px;" id="kasbonGrandTotal">Rp 0</div>
+          <div style="font-size:0.7rem;color:var(--text-secondary);margin-top:4px;">
+            Saldo DANA sudah terpotong saat transaksi; saat dilunasi otomatis masuk ke DANA atau Tunai Laci.
+          </div>
+        </section>
+
+        <div id="kasbonListContainer" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+
+      <!-- ==================================================================
+           TAB 3: LAPORAN AUDIT & ALAT BUILD APK
+           ================================================================== -->
+      <div class="tab-pane" id="tabLaporan">
+        <section class="card">
+          <h3 class="section-title" style="margin-bottom:10px;">Audit Keseimbangan Kas (Zero-Minus)</h3>
+          <div style="display:flex;flex-direction:column;gap:7px;font-size:0.78rem;">
+            <div class="cp-row"><span>1. Saldo DANA Saat Ini:</span><strong class="mono-num" id="repDana">Rp 0</strong></div>
+            <div class="cp-row"><span>2. Uang Tunai di Laci:</span><strong class="mono-num" id="repCash">Rp 0</strong></div>
+            <div class="cp-row"><span>3. Piutang Kasbon Aktif:</span><strong class="mono-num" id="repKasbon">Rp 0</strong></div>
+            <div class="cp-row" style="border-top:1px dashed var(--border-strong);padding-top:6px;">
+              <strong>Total Aset Fisik &amp; Digital (1+2+3):</strong>
+              <strong class="mono-num" style="color:var(--dana);" id="repTotalAsset">Rp 0</strong>
+            </div>
+            <div class="cp-row" style="margin-top:4px;"><span>Modal Disetor:</span><strong class="mono-num" id="repModal">Rp 0</strong></div>
+            <div class="cp-row"><span>Total Akumulasi Profit:</span><strong class="mono-num" style="color:var(--cash);" id="repTotalProfit">Rp 0</strong></div>
+            <div class="cp-row"><span>Profit Sudah Diambil:</span><strong class="mono-num" style="color:var(--danger);" id="repWithdrawn">Rp 0</strong></div>
+            <div class="cp-row" style="border-top:1px dashed var(--border-strong);padding-top:6px;">
+              <strong>Selisih Audit (Harus Rp 0):</strong>
+              <strong class="mono-num" style="color:var(--cash);" id="repAuditDiff">Rp 0</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <svg width="54" height="54" viewBox="0 0 64 64" fill="none" style="border-radius:14px;box-shadow:0 4px 12px var(--dana-glow);flex-shrink:0;">
+              <defs>
+                <linearGradient id="apkIconGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#0EA5E9" />
+                  <stop offset="55%" stop-color="#0284C7" />
+                  <stop offset="100%" stop-color="#1D4ED8" />
+                </linearGradient>
+                <linearGradient id="apkGoldGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#FDE047" />
+                  <stop offset="100%" stop-color="#F59E0B" />
+                </linearGradient>
+              </defs>
+              <rect width="64" height="64" rx="14" fill="url(#apkIconGrad)" />
+              <circle cx="52" cy="12" r="20" fill="rgba(255,255,255,0.12)" />
+              <rect x="14" y="15" width="32" height="16" rx="6" fill="rgba(255,255,255,0.45)" />
+              <rect x="11" y="21" width="42" height="28" rx="8" fill="#FFFFFF" />
+              <rect x="37" y="29" width="18" height="12" rx="6" fill="#E0F2FE" />
+              <circle cx="43" cy="35" r="3.6" fill="url(#apkGoldGrad)" />
+              <path d="M24.5 27L19.5 35H24L22.5 43L29.5 34H25L24.5 27Z" fill="#0284C7" />
+            </svg>
+            <div>
+              <h3 class="section-title">Alat Build APK &amp; Backup Data</h3>
+              <p style="font-size:0.72rem;color:var(--text-secondary);margin-top:2px;">Logo Dompet Digital Fintech siap ekspor ke PNG.</p>
+            </div>
+          </div>
+
+          <button type="button" class="btn-submit" id="btnDownloadIcons">
+            🎨 Download Ikon APK (icon-192.png &amp; icon-512.png)
+          </button>
+          <div class="f-row-2">
+            <button type="button" class="seg-opt" id="btnExportCsv" style="height:40px;">📄 Export Excel (.csv)</button>
+            <button type="button" class="seg-opt" id="btnExportJson" style="height:40px;">⬇️ Backup JSON</button>
+          </div>
+          <button type="button" class="seg-opt" id="btnImportJson" style="height:40px;">⬆️ Restore Backup JSON</button>
+          <input type="file" id="importJsonInput" accept=".json,application/json" style="display:none;" />
+          <button type="button" class="seg-opt" id="btnResetAll" style="height:40px;background:var(--danger-tint);color:var(--danger);border:none;">
+            🗑️ Reset Semua Data ke 0
+          </button>
+        </section>
+      </div>
+
+    </main>
+
+    <!-- FIXED BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+      <button type="button" class="nav-btn active" data-nav="tabBeranda">
+        <span>🏠</span><span>Beranda</span>
+      </button>
+      <button type="button" class="nav-btn" data-nav="tabKasbon">
+        <span>📒</span><span id="navKasbonLabel">Kasbon</span>
+      </button>
+      <button type="button" class="nav-btn" data-nav="tabLaporan">
+        <span>📊</span><span>Audit &amp; APK</span>
+      </button>
+      <button type="button" class="nav-cta" id="btnNavTransaksi">
+        <span>+ Transaksi</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ========================================================================
+       BOTTOM-SHEET 1: FORM TRANSAKSI UTAMA
+       ======================================================================== -->
+  <div class="sheet-backdrop" id="txSheet">
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <h3 class="sheet-title" id="txSheetTitle">Catat Transaksi Top-Up</h3>
+        <button type="button" class="close-btn" data-close="txSheet">✕</button>
+      </div>
+
+      <form id="txForm" novalidate>
+        <div class="f-group">
+          <label class="f-label" for="serviceTypeSel">Jenis Layanan</label>
+          <select id="serviceTypeSel" class="f-input">
+            <option value="tf_dana">💸 Transfer DANA ke DANA (Biaya App Rp 0)</option>
+            <option value="tf_bank">🏦 Transfer Bank / E-Wallet Lain</option>
+            <option value="pulsa_pln">⚡ Pulsa / Paket Data / Token PLN</option>
+            <option value="tarik_tunai">💵 Jasa Tarik Tunai (Masuk DANA, Keluar Laci)</option>
+          </select>
+        </div>
+
+        <div class="f-group">
+          <label class="f-label" for="targetInput">Nomor HP / Tujuan / Nama Pelanggan</label>
+          <input type="text" id="targetInput" class="f-input" placeholder="Misal: 0812xxxx / Budi" required />
+        </div>
+
+        <div class="f-group">
+          <label class="f-label" for="nominalInput">Nominal Transaksi (Rp)</label>
+          <input type="text" inputmode="numeric" id="nominalInput" class="f-input mono-num" placeholder="50.000" required />
+          <div class="chip-row">
+            <button type="button" class="mini-chip" data-nom-preset="20000">20rb</button>
+            <button type="button" class="mini-chip" data-nom-preset="50000">50rb</button>
+            <button type="button" class="mini-chip" data-nom-preset="100000">100rb</button>
+            <button type="button" class="mini-chip" data-nom-preset="200000">200rb</button>
+          </div>
+        </div>
+
+        <div class="f-row-2 f-group" id="modalSellRow">
+          <div id="appFeeCol">
+            <label class="f-label" for="appFeeInput">Biaya Admin App (Rp)</label>
+            <input type="text" inputmode="numeric" id="appFeeInput" class="f-input mono-num" value="0" />
+          </div>
+          <div>
+            <label class="f-label" for="sellPriceInput">Harga Bayar Pelanggan (Rp)</label>
+            <input type="text" inputmode="numeric" id="sellPriceInput" class="f-input mono-num" placeholder="52.000" required />
+          </div>
+        </div>
+
+        <div class="f-group">
+          <label class="f-label">Tambah Tarif Jasa Admin Cepat:</label>
+          <div class="chip-row">
+            <button type="button" class="mini-chip" data-add-admin="2000">+2.000</button>
+            <button type="button" class="mini-chip" data-add-admin="3000">+3.000</button>
+            <button type="button" class="mini-chip" data-add-admin="5000">+5.000</button>
+            <button type="button" class="mini-chip" data-add-admin="10000">+10.000</button>
+          </div>
+        </div>
+
+        <div class="f-group" id="payMethodGroup">
+          <label class="f-label">Pelanggan Bayarnya Pakai Apa?</label>
+          <div class="seg-3">
+            <button type="button" class="seg-opt active" data-pay-opt="Tunai">
+              <span>💵 Tunai Laci</span>
+              <small>DANA turun, Laci naik</small>
+            </button>
+            <button type="button" class="seg-opt" data-pay-opt="Transfer DANA/QRIS">
+              <span>💙 TF DANA</span>
+              <small>Balik ke DANA</small>
+            </button>
+            <button type="button" class="seg-opt" data-pay-opt="Kasbon">
+              <span>📒 Kasbon</span>
+              <small>DANA turun, Piutang</small>
+            </button>
+          </div>
+        </div>
+
+        <div class="calc-preview mono-num" id="txPreviewBox"></div>
+
+        <div class="err-box" id="txErrorBox"></div>
+        <button type="submit" class="btn-submit">Simpan Transaksi</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       BOTTOM-SHEET 2: MUTASI INTERNAL
+       ======================================================================== -->
+  <div class="sheet-backdrop" id="walletSheet">
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <h3 class="sheet-title" id="walletSheetTitle">Mutasi Saldo</h3>
+        <button type="button" class="close-btn" data-close="walletSheet">✕</button>
+      </div>
+
+      <form id="walletForm" novalidate>
+        <input type="hidden" id="walletActionType" value="" />
+        <p id="walletActionDesc" style="font-size:0.76rem;color:var(--text-secondary);margin-bottom:12px;line-height:1.45;"></p>
+
+        <div class="f-group" id="walletSourceGroup">
+          <label class="f-label" for="walletSourceSel">Sumber / Tujuan Akun</label>
+          <select id="walletSourceSel" class="f-input">
+            <option value="DANA">💙 Saldo Akun DANA</option>
+            <option value="Tunai">💵 Tunai di Laci</option>
+          </select>
+        </div>
+
+        <div class="f-group">
+          <label class="f-label" for="walletAmtInput">Nominal (Rp)</label>
+          <input type="text" inputmode="numeric" id="walletAmtInput" class="f-input mono-num" placeholder="0" required />
+        </div>
+
+        <div class="f-group" id="walletFeeGroup" style="display:none;">
+          <label class="f-label" for="walletFeeInput">Biaya Admin Top-Up Gerai/Bank (jika ada, Rp)</label>
+          <input type="text" inputmode="numeric" id="walletFeeInput" class="f-input mono-num" value="0" />
+        </div>
+
+        <div class="f-group">
+          <label class="f-label" for="walletNoteInput">Keterangan</label>
+          <input type="text" id="walletNoteInput" class="f-input" placeholder="Misal: Modal awal, Isi saldo via Alfamart..." />
+        </div>
+
+        <div class="err-box" id="walletErrorBox"></div>
+        <button type="submit" class="btn-submit">Konfirmasi</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       BOTTOM-SHEET 3: PELUNASAN KASBON
+       ======================================================================== -->
+  <div class="sheet-backdrop" id="kasbonPaySheet">
+    <div class="bottom-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <h3 class="sheet-title">Lunasi Kasbon Pelanggan</h3>
+        <button type="button" class="close-btn" data-close="kasbonPaySheet">✕</button>
+      </div>
+      <p id="kasbonPayInfo" style="font-size:0.82rem;margin-bottom:12px;"></p>
+      <div class="f-group">
+        <label class="f-label">Uang Pelunasan Masuk ke Mana?</label>
+        <div class="f-row-2">
+          <button type="button" class="btn-submit" style="background:var(--cash);" id="btnSettleCash">💵 Masuk Tunai Laci</button>
+          <button type="button" class="btn-submit" id="btnSettleDana">💙 Masuk Saldo DANA</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toastHud"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* SPLASH SCREEN & STAGGERED DASHBOARD ENTRANCE */
+      setTimeout(() => {
+        const splash = document.getElementById('splashIntro');
+        document.body.classList.add('app-ready');
+        if (splash) {
+          splash.classList.add('hide');
+          setTimeout(() => splash.remove(), 520);
+        }
+      }, 2000);
+
+      /* AUTO-DISABLE STALE SERVICE WORKER ON LOCALHOST / LIVE SERVER */
+      if ('serviceWorker' in navigator) {
+        const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+        if (isLocal) {
+          navigator.serviceWorker.getRegistrations().then(regs => {
+            regs.forEach(r => r.unregister());
+          });
+          if ('caches' in window) {
+            caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+          }
+        } else if (window.location.protocol === 'https:') {
+          navigator.serviceWorker.register('./sw.js').catch(() => {});
+        }
+      }
+
+      /* PNG ICON GENERATOR (LOGO DOMPET DIGITAL FINTECH MODERN) */
+      function roundRectPath(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + w, y, x + w, y + h, r);
+        ctx.arcTo(x + w, y + h, x, y + h, r);
+        ctx.arcTo(x, y + h, x, y, r);
+        ctx.arcTo(x, y, x + w, y, r);
+        ctx.closePath();
+      }
+
+      function downloadPngIcon(size, filename) {
+        const c = document.createElement('canvas');
+        c.width = size;
+        c.height = size;
+        const ctx = c.getContext('2d');
+        const scale = size / 64;
+
+        ctx.save();
+        ctx.scale(scale, scale);
+
+        const g = ctx.createLinearGradient(0, 0, 64, 64);
+        g.addColorStop(0, '#0EA5E9');
+        g.addColorStop(0.55, '#0284C7');
+        g.addColorStop(1, '#1D4ED8');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, 64, 64);
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.beginPath();
+        ctx.arc(52, 12, 20, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+        roundRectPath(ctx, 14, 15, 32, 16, 6);
+        ctx.fill();
+
+        ctx.fillStyle = '#FFFFFF';
+        roundRectPath(ctx, 11, 21, 42, 28, 8);
+        ctx.fill();
+
+        ctx.fillStyle = '#E0F2FE';
+        roundRectPath(ctx, 37, 29, 18, 12, 6);
+        ctx.fill();
+
+        const gold = ctx.createLinearGradient(39, 31, 47, 39);
+        gold.addColorStop(0, '#FDE047');
+        gold.addColorStop(1, '#F59E0B');
+        ctx.fillStyle = gold;
+        ctx.beginPath();
+        ctx.arc(43, 35, 3.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#0284C7';
+        ctx.fill(new Path2D('M24.5 27L19.5 35H24L22.5 43L29.5 34H25L24.5 27Z'));
+
+        ctx.restore();
+
+        const a = document.createElement('a');
+        a.download = filename;
+        a.href = c.toDataURL('image/png');
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      const STORAGE_KEY = 'loketku_single_dana_v1';
+
+      function getInitialState() {
+        return {
+          theme: 'light',
+          transactions: []
+        };
+      }
+
+      let state = loadState();
+      let selectedPayMethod = 'Tunai';
+      let settlingTxId = null;
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return getInitialState();
+          const p = JSON.parse(raw);
+          return {
+            theme: p.theme === 'dark' ? 'dark' : 'light',
+            transactions: Array.isArray(p.transactions) ? p.transactions : []
+          };
+        } catch (e) {
+          return getInitialState();
+        }
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+          showToast('Memori penuh, silakan Backup JSON.');
+        }
+      }
+
+      function formatRp(n) {
+        const v = Math.round(Number(n) || 0);
+        return (v < 0 ? '-Rp ' : 'Rp ') + Math.abs(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      }
+
+      function cleanDigits(str) {
+        const d = String(str || '').replace(/[^\d]/g, '');
+        return d ? parseInt(d, 10) : 0;
+      }
+
+      function formatThousands(el) {
+        const v = cleanDigits(el.value);
+        el.value = v > 0 ? v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+      }
+
+      function esc(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function showToast(msg) {
+        const t = document.getElementById('toastHud');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+      }
+
+      function openSheet(id) { document.getElementById(id).classList.add('open'); }
+      function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
+
+      /* ======================================================================
+         EVENT-SOURCED LEDGER CALCULATOR (GUARANTEED ZERO-MINUS DRIFT)
+         ====================================================================== */
+      function computeBalances() {
+        let dana = 0;
+        let cash = 0;
+        let piutangKasbon = 0;
+        let capitalInjected = 0;
+        let totalProfitEarned = 0;
+        let profitWithdrawn = 0;
+
+        const chronological = [...state.transactions].reverse();
+
+        chronological.forEach(tx => {
+          if (tx.category === 'modal_masuk') {
+            capitalInjected += tx.nominal;
+            if (tx.payMethod === 'DANA') dana += tx.nominal;
+            else cash += tx.nominal;
+          } else if (tx.category === 'isi_dana') {
+            cash -= tx.nominal;
+            dana += tx.sellPrice;
+            totalProfitEarned += tx.profit;
+          } else if (tx.category === 'ambil_profit') {
+            profitWithdrawn += tx.nominal;
+            if (tx.payMethod === 'DANA') dana -= tx.nominal;
+            else cash -= tx.nominal;
+          } else if (tx.category === 'tarik_tunai') {
+            cash -= tx.nominal;
+            dana += tx.sellPrice;
+            totalProfitEarned += tx.profit;
+          } else {
+            dana -= tx.modalOut;
+            totalProfitEarned += tx.profit;
+
+            if (tx.payMethod === 'Tunai') {
+              cash += tx.sellPrice;
+            } else if (tx.payMethod === 'Transfer DANA/QRIS') {
+              dana += tx.sellPrice;
+            } else if (tx.payMethod === 'Kasbon') {
+              if (tx.kasbonStatus === 'Lunas') {
+                if (tx.kasbonPaidMethod === 'Transfer DANA/QRIS') dana += tx.sellPrice;
+                else cash += tx.sellPrice;
+              } else {
+                piutangKasbon += tx.sellPrice;
+              }
+            }
+          }
+        });
+
+        const availProfit = totalProfitEarned - profitWithdrawn;
+        const totalAsset = dana + cash + piutangKasbon;
+        const expectedEquity = capitalInjected + availProfit;
+        const auditDiff = totalAsset - expectedEquity;
+
+        return {
+          dana,
+          cash,
+          piutangKasbon,
+          capitalInjected,
+          totalProfitEarned,
+          profitWithdrawn,
+          availProfit,
+          totalAsset,
+          auditDiff
+        };
+      }
+
+      /* ======================================================================
+         RENDER UI
+         ====================================================================== */
+      function renderAll() {
+        document.documentElement.setAttribute('data-theme', state.theme);
+        document.getElementById('metaThemeColor').setAttribute('content', state.theme === 'dark' ? '#0B1120' : '#0284C7');
+        document.getElementById('themeIcon').textContent = state.theme === 'dark' ? '☀️' : '🌙';
+        document.getElementById('themeText').textContent = state.theme === 'dark' ? 'Light' : 'Dark';
+
+        const b = computeBalances();
+
+        const badge = document.getElementById('auditBadge');
+        if (b.auditDiff === 0) {
+          badge.textContent = '✓ SEIMBANG';
+          badge.style.background = 'var(--cash-tint)';
+          badge.style.color = 'var(--cash)';
+        } else {
+          badge.textContent = `Selisih ${formatRp(b.auditDiff)}`;
+          badge.style.background = 'var(--danger-tint)';
+          badge.style.color = 'var(--danger)';
+        }
+
+        document.getElementById('totalAssetVal').textContent = formatRp(b.totalAsset);
+        document.getElementById('piutangMiniBadge').textContent = `Kasbon: ${formatRp(b.piutangKasbon)}`;
+        document.getElementById('lockedCapitalVal').textContent = formatRp(b.capitalInjected);
+        document.getElementById('netProfitMasterVal').textContent = formatRp(b.availProfit);
+
+        document.getElementById('danaBalVal').textContent = formatRp(b.dana);
+        document.getElementById('cashBalVal').textContent = formatRp(b.cash);
+        document.getElementById('availProfitVal').textContent = formatRp(b.availProfit);
+
+        const danaHint = document.getElementById('danaBreakdownHint');
+        if (b.dana > b.capitalInjected && b.cash === 0 && b.availProfit > 0) {
+          danaHint.textContent = `Termasuk profit ${formatRp(b.availProfit)} di DANA`;
+        } else {
+          danaHint.textContent = 'Saldo siap kirim di aplikasi DANA';
+        }
+
+        document.getElementById('repDana').textContent = formatRp(b.dana);
+        document.getElementById('repCash').textContent = formatRp(b.cash);
+        document.getElementById('repKasbon').textContent = formatRp(b.piutangKasbon);
+        document.getElementById('repTotalAsset').textContent = formatRp(b.totalAsset);
+        document.getElementById('repModal').textContent = formatRp(b.capitalInjected);
+        document.getElementById('repTotalProfit').textContent = formatRp(b.totalProfitEarned);
+        document.getElementById('repWithdrawn').textContent = formatRp(b.profitWithdrawn);
+        document.getElementById('repAuditDiff').textContent = formatRp(b.auditDiff);
+
+        renderRecentLedger();
+        renderKasbonTab(b.piutangKasbon);
+      }
+
+      function getCategoryLabel(cat) {
+        const map = {
+          tf_dana: '💸 TF DANA ke DANA',
+          tf_bank: '🏦 TF Bank / E-Wallet',
+          pulsa_pln: '⚡ Pulsa / Data / PLN',
+          tarik_tunai: '💵 Jasa Tarik Tunai',
+          isi_dana: '🔄 Isi Saldo DANA',
+          modal_masuk: '➕ Tambah Modal',
+          ambil_profit: '🏆 Ambil Profit'
+        };
+        return map[cat] || cat;
+      }
+
+      function renderRecentLedger() {
+        const listEl = document.getElementById('recentTxList');
+        document.getElementById('txTotalCount').textContent = `${state.transactions.length} transaksi`;
+
+        if (state.transactions.length === 0) {
+          listEl.innerHTML = `<div class="card" style="text-align:center;font-size:0.8rem;color:var(--text-muted);padding:26px;">
+            Belum ada transaksi. Ketuk <strong>+ Isi Saldo DANA</strong> atau <strong>+ Tambah Modal</strong> untuk memulai.
+          </div>`;
+          return;
+        }
+
+        listEl.innerHTML = state.transactions.map(tx => {
+          const isInternal = ['isi_dana', 'modal_masuk', 'ambil_profit'].includes(tx.category);
+          let statusBadge = '';
+          if (isInternal) {
+            statusBadge = `<span class="tag-pill internal">${tx.payMethod}</span>`;
+          } else if (tx.payMethod === 'Kasbon' && tx.kasbonStatus !== 'Lunas') {
+            statusBadge = `<span class="tag-pill kasbon">Kasbon</span>`;
+          } else {
+            statusBadge = `<span class="tag-pill lunas">${tx.payMethod === 'Kasbon' ? 'Kasbon Lunas' : tx.payMethod}</span>`;
+          }
+
+          const mainNominal = isInternal ? tx.nominal : tx.sellPrice;
+          const detailLine = isInternal
+            ? `${esc(tx.target || 'Mutasi Kas')} • ${tx.date} ${tx.time}`
+            : `Tujuan: ${esc(tx.target)} • Modal: ${formatRp(tx.modalOut)} • ${tx.time}`;
+
+          return `
+            <div class="tx-card">
+              <div class="tx-left">
+                <div class="tx-top-line">
+                  <span>${getCategoryLabel(tx.category)}</span>
+                  ${statusBadge}
+                </div>
+                <div class="tx-sub">${detailLine}</div>
+              </div>
+              <div class="tx-right">
+                <div class="tx-nominal mono-num">${formatRp(mainNominal)}</div>
+                ${!isInternal
+                  ? `<div class="tx-profit-tag mono-num">Profit +${formatRp(tx.profit)}</div>`
+                  : (tx.profit < 0 ? `<div class="tx-profit-tag mono-num" style="color:var(--danger);">Biaya ${formatRp(tx.profit)}</div>` : '')}
+              </div>
+              <button type="button" class="del-tiny" data-del-tx="${tx.id}" title="Hapus">✕</button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function renderKasbonTab(totalPiutang) {
+        document.getElementById('kasbonGrandTotal').textContent = formatRp(totalPiutang);
+        const unpaid = state.transactions.filter(tx => tx.payMethod === 'Kasbon' && tx.kasbonStatus !== 'Lunas');
+        document.getElementById('navKasbonLabel').textContent = unpaid.length > 0 ? `Kasbon (${unpaid.length})` : 'Kasbon';
+
+        const box = document.getElementById('kasbonListContainer');
+        if (unpaid.length === 0) {
+          box.innerHTML = `<div class="card" style="text-align:center;font-size:0.8rem;color:var(--text-muted);padding:26px;">
+            Tidak ada piutang kasbon aktif. Semua transaksi lunas!
+          </div>`;
+          return;
+        }
+
+        box.innerHTML = unpaid.map(tx => `
+          <div class="card" style="display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div style="font-size:0.88rem;font-weight:800;">${esc(tx.target)}</div>
+                <div style="font-size:0.72rem;color:var(--text-secondary);">${getCategoryLabel(tx.category)} • ${tx.date} ${tx.time}</div>
+              </div>
+              <strong class="mono-num" style="font-size:0.98rem;color:var(--danger);">${formatRp(tx.sellPrice)}</strong>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;">
+              <button type="button" class="btn-wa" data-wa-kasbon="${tx.id}">📲 Tagih WA</button>
+              <button type="button" class="btn-lunasi" data-settle-kasbon="${tx.id}">✅ Lunasi</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      /* ======================================================================
+         TRANSACTION FORM & LIVE SPLIT PREVIEW
+         ====================================================================== */
+      function getSuggestedAdmin(nom) {
+        if (nom <= 0) return 0;
+        if (nom < 100000) return 2000;
+        if (nom <= 300000) return 3000;
+        return 5000;
+      }
+
+      function openTxSheet(serviceType = 'tf_dana') {
+        document.getElementById('txErrorBox').textContent = '';
+        document.getElementById('serviceTypeSel').value = serviceType;
+        document.getElementById('targetInput').value = '';
+        document.getElementById('nominalInput').value = '';
+        document.getElementById('appFeeInput').value = '0';
+        document.getElementById('sellPriceInput').value = '';
+        selectedPayMethod = 'Tunai';
+        updatePayMethodPills();
+        syncServiceUI();
+        openSheet('txSheet');
+      }
+
+      function syncServiceUI() {
+        const srv = document.getElementById('serviceTypeSel').value;
+        const appFeeCol = document.getElementById('appFeeCol');
+        const payGroup = document.getElementById('payMethodGroup');
+
+        if (srv === 'tf_dana') {
+          document.getElementById('appFeeInput').value = '0';
+          appFeeCol.style.opacity = '0.75';
+          payGroup.style.display = 'block';
+        } else if (srv === 'tarik_tunai') {
+          document.getElementById('appFeeInput').value = '0';
+          appFeeCol.style.opacity = '0.5';
+          payGroup.style.display = 'none';
+        } else {
+          appFeeCol.style.opacity = '1';
+          payGroup.style.display = 'block';
+        }
+        updateTxPreview();
+      }
+
+      function updatePayMethodPills() {
+        document.querySelectorAll('[data-pay-opt]').forEach(btn => {
+          const val = btn.getAttribute('data-pay-opt');
+          btn.className = 'seg-opt';
+          if (val === selectedPayMethod) {
+            btn.classList.add(val === 'Kasbon' ? 'active-kasbon' : 'active');
+          }
+        });
+      }
+
+      function updateTxPreview() {
+        const srv = document.getElementById('serviceTypeSel').value;
+        const nom = cleanDigits(document.getElementById('nominalInput').value);
+        const appFee = srv === 'tarik_tunai' ? 0 : cleanDigits(document.getElementById('appFeeInput').value);
+        const sell = cleanDigits(document.getElementById('sellPriceInput').value);
+        const modalOut = nom + appFee;
+        const profit = sell - modalOut;
+
+        const box = document.getElementById('txPreviewBox');
+        if (srv === 'tarik_tunai') {
+          box.innerHTML = `
+            <div class="cp-row"><span>Uang Tunai Laci Keluar:</span><strong style="color:var(--danger);">-${formatRp(nom)}</strong></div>
+            <div class="cp-row"><span>Transfer Masuk ke DANA:</span><strong style="color:var(--dana);">+${formatRp(sell)}</strong></div>
+            <div class="cp-row"><span>Profit Jasa Tarik Tunai:</span><strong style="color:${profit >= 0 ? 'var(--cash)' : 'var(--danger)'};">${formatRp(profit)}</strong></div>
+          `;
+        } else {
+          const destLabel = selectedPayMethod === 'Tunai'
+            ? `Tunai Laci +${formatRp(sell)}`
+            : (selectedPayMethod === 'Transfer DANA/QRIS' ? `DANA Net ${profit >= 0 ? '+' : ''}${formatRp(profit)}` : `Piutang Kasbon +${formatRp(sell)}`);
+          box.innerHTML = `
+            <div class="cp-row"><span>Modal Keluar Saldo DANA:</span><strong style="color:var(--danger);">-${formatRp(modalOut)}</strong></div>
+            <div class="cp-row"><span>Arus Masuk (${selectedPayMethod}):</span><strong style="color:var(--dana);">${destLabel}</strong></div>
+            <div class="cp-row"><span>Keuntungan Bersih:</span><strong style="color:${profit >= 0 ? 'var(--cash)' : 'var(--danger)'};">${formatRp(profit)}</strong></div>
+          `;
+        }
+      }
+
+      /* ======================================================================
+         WALLET INTERNAL ACTIONS
+         ====================================================================== */
+      function openWalletSheet(actionType) {
+        document.getElementById('walletErrorBox').textContent = '';
+        document.getElementById('walletActionType').value = actionType;
+        document.getElementById('walletAmtInput').value = '';
+        document.getElementById('walletFeeInput').value = '0';
+        document.getElementById('walletNoteInput').value = '';
+
+        const title = document.getElementById('walletSheetTitle');
+        const desc = document.getElementById('walletActionDesc');
+        const srcGroup = document.getElementById('walletSourceGroup');
+        const feeGroup = document.getElementById('walletFeeGroup');
+
+        if (actionType === 'isi_dana') {
+          title.textContent = '🔄 Isi Ulang Saldo DANA dari Tunai Laci';
+          desc.textContent = 'Memindahkan uang fisik dari Tunai Laci ke Saldo Akun DANA (misal top-up lewat Alfamart/Indomaret).';
+          srcGroup.style.display = 'none';
+          feeGroup.style.display = 'block';
+        } else if (actionType === 'modal_masuk') {
+          title.textContent = '➕ Tambah Modal Usaha';
+          desc.textContent = 'Menambah modal awal atau suntikan modal baru ke DANA atau Tunai Laci (tidak dihitung sebagai profit).';
+          srcGroup.style.display = 'block';
+          feeGroup.style.display = 'none';
+        } else if (actionType === 'ambil_profit') {
+          const b = computeBalances();
+          title.textContent = '🏆 Ambil Keuntungan Bersih';
+          desc.textContent = `Maksimal profit yang boleh diambil: ${formatRp(b.availProfit)}. Uang modal tetap aman terkunci.`;
+          srcGroup.style.display = 'block';
+          feeGroup.style.display = 'none';
+        }
+        openSheet('walletSheet');
+      }
+
+      /* ======================================================================
+         BIND EVENTS
+         ====================================================================== */
+      function bindEvents() {
+        document.querySelectorAll('[data-nav]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const target = btn.getAttribute('data-nav');
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id === target));
+            document.querySelectorAll('[data-nav]').forEach(b => b.classList.toggle('active', b === btn));
+          });
+        });
+
+        document.getElementById('btnThemeToggle').addEventListener('click', () => {
+          state.theme = state.theme === 'light' ? 'dark' : 'light';
+          saveState();
+          renderAll();
+        });
+
+        document.getElementById('btnNavTransaksi').addEventListener('click', () => openTxSheet('tf_dana'));
+        document.querySelectorAll('[data-open-service]').forEach(tile => {
+          tile.addEventListener('click', () => openTxSheet(tile.getAttribute('data-open-service')));
+        });
+
+        document.getElementById('btnTopupDana').addEventListener('click', () => openWalletSheet('isi_dana'));
+        document.getElementById('btnAddCapital').addEventListener('click', () => openWalletSheet('modal_masuk'));
+        document.getElementById('btnWithdrawProfit').addEventListener('click', () => openWalletSheet('ambil_profit'));
+
+        document.getElementById('serviceTypeSel').addEventListener('change', syncServiceUI);
+
+        const nomIn = document.getElementById('nominalInput');
+        const appFeeIn = document.getElementById('appFeeInput');
+        const sellIn = document.getElementById('sellPriceInput');
+
+        nomIn.addEventListener('input', () => {
+          formatThousands(nomIn);
+          const nom = cleanDigits(nomIn.value);
+          const appFee = cleanDigits(appFeeIn.value);
+          const suggested = nom + appFee + getSuggestedAdmin(nom);
+          sellIn.value = suggested > 0 ? suggested.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+          updateTxPreview();
+        });
+
+        appFeeIn.addEventListener('input', () => {
+          formatThousands(appFeeIn);
+          updateTxPreview();
+        });
+
+        sellIn.addEventListener('input', () => {
+          formatThousands(sellIn);
+          updateTxPreview();
+        });
+
+        document.querySelectorAll('[data-nom-preset]').forEach(chip => {
+          chip.addEventListener('click', () => {
+            nomIn.value = chip.getAttribute('data-nom-preset');
+            nomIn.dispatchEvent(new Event('input'));
+          });
+        });
+
+        document.querySelectorAll('[data-add-admin]').forEach(chip => {
+          chip.addEventListener('click', () => {
+            const nom = cleanDigits(nomIn.value);
+            const appFee = cleanDigits(appFeeIn.value);
+            const admin = parseInt(chip.getAttribute('data-add-admin'), 10);
+            const totalSell = nom + appFee + admin;
+            sellIn.value = totalSell.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            updateTxPreview();
+          });
+        });
+
+        document.querySelectorAll('[data-pay-opt]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            selectedPayMethod = btn.getAttribute('data-pay-opt');
+            updatePayMethodPills();
+            updateTxPreview();
+          });
+        });
+
+        document.getElementById('txForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const err = document.getElementById('txErrorBox');
+          err.textContent = '';
+
+          const srv = document.getElementById('serviceTypeSel').value;
+          const target = document.getElementById('targetInput').value.trim();
+          const nom = cleanDigits(nomIn.value);
+          const appFee = srv === 'tarik_tunai' ? 0 : cleanDigits(appFeeIn.value);
+          const sell = cleanDigits(sellIn.value);
+          const modalOut = nom + appFee;
+          const profit = sell - modalOut;
+          const balances = computeBalances();
+
+          if (!target) {
+            err.textContent = 'Isi nomor tujuan atau nama pelanggan.';
+            return;
+          }
+          if (nom <= 0) {
+            err.textContent = 'Nominal transaksi harus lebih dari Rp 0.';
+            return;
+          }
+          if (sell < modalOut) {
+            err.textContent = `Harga bayar tidak boleh lebih kecil dari modal (${formatRp(modalOut)}).`;
+            return;
+          }
+
+          if (srv === 'tarik_tunai') {
+            if (balances.cash < nom) {
+              err.textContent = `Uang Tunai di Laci tidak cukup (tersedia ${formatRp(balances.cash)}).`;
+              return;
+            }
+          } else {
+            if (balances.dana < modalOut) {
+              err.textContent = `Saldo DANA tidak cukup (tersedia ${formatRp(balances.dana)}). Isi saldo DANA dulu!`;
+              return;
+            }
+          }
+
+          const now = new Date();
+          state.transactions.unshift({
+            id: 'TX-' + Date.now(),
+            date: now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+            time: now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+            category: srv,
+            target,
+            nominal: nom,
+            appFee,
+            modalOut,
+            sellPrice: sell,
+            profit,
+            payMethod: srv === 'tarik_tunai' ? 'Transfer DANA/QRIS' : selectedPayMethod,
+            kasbonStatus: selectedPayMethod === 'Kasbon' && srv !== 'tarik_tunai' ? 'Belum Lunas' : 'Lunas',
+            kasbonPaidMethod: null
+          });
+
+          saveState();
+          closeSheet('txSheet');
+          renderAll();
+          showToast(`Transaksi tersimpan! Profit +${formatRp(profit)}`);
+        });
+
+        const wAmtIn = document.getElementById('walletAmtInput');
+        const wFeeIn = document.getElementById('walletFeeInput');
+        wAmtIn.addEventListener('input', () => formatThousands(wAmtIn));
+        wFeeIn.addEventListener('input', () => formatThousands(wFeeIn));
+
+        document.getElementById('walletForm').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const err = document.getElementById('walletErrorBox');
+          err.textContent = '';
+
+          const act = document.getElementById('walletActionType').value;
+          const src = document.getElementById('walletSourceSel').value;
+          const amt = cleanDigits(wAmtIn.value);
+          const fee = cleanDigits(wFeeIn.value);
+          const note = document.getElementById('walletNoteInput').value.trim();
+          const b = computeBalances();
+
+          if (amt <= 0) {
+            err.textContent = 'Masukkan nominal lebih dari Rp 0.';
+            return;
+          }
+
+          const now = new Date();
+          const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+          const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+          if (act === 'isi_dana') {
+            if (b.cash < amt) {
+              err.textContent = `Tunai Laci kurang (tersedia ${formatRp(b.cash)}).`;
+              return;
+            }
+            if (fee >= amt) {
+              err.textContent = 'Biaya admin tidak boleh melebihi nominal top-up.';
+              return;
+            }
+            state.transactions.unshift({
+              id: 'TX-' + Date.now(),
+              date: dateStr,
+              time: timeStr,
+              category: 'isi_dana',
+              target: note || 'Top-Up DANA dari Laci',
+              nominal: amt,
+              appFee: fee,
+              modalOut: amt,
+              sellPrice: amt - fee,
+              profit: -fee,
+              payMethod: 'Tunai → DANA',
+              kasbonStatus: 'Lunas',
+              kasbonPaidMethod: null
+            });
+          } else if (act === 'modal_masuk') {
+            state.transactions.unshift({
+              id: 'TX-' + Date.now(),
+              date: dateStr,
+              time: timeStr,
+              category: 'modal_masuk',
+              target: note || `Modal ke ${src}`,
+              nominal: amt,
+              appFee: 0,
+              modalOut: 0,
+              sellPrice: amt,
+              profit: 0,
+              payMethod: src,
+              kasbonStatus: 'Lunas',
+              kasbonPaidMethod: null
+            });
+          } else if (act === 'ambil_profit') {
+            if (amt > b.availProfit) {
+              err.textContent = `Ditolak! Maksimal profit tersedia hanya ${formatRp(b.availProfit)}.`;
+              return;
+            }
+            if (src === 'Tunai' && b.cash < amt) {
+              err.textContent = `Tunai Laci kurang (${formatRp(b.cash)}). Pilih ambil dari Saldo DANA.`;
+              return;
+            }
+            if (src === 'DANA' && b.dana < amt) {
+              err.textContent = `Saldo DANA kurang (${formatRp(b.dana)}). Pilih ambil dari Tunai Laci.`;
+              return;
+            }
+            state.transactions.unshift({
+              id: 'TX-' + Date.now(),
+              date: dateStr,
+              time: timeStr,
+              category: 'ambil_profit',
+              target: note || `Ambil Profit (${src})`,
+              nominal: amt,
+              appFee: 0,
+              modalOut: amt,
+              sellPrice: 0,
+              profit: 0,
+              payMethod: src,
+              kasbonStatus: 'Lunas',
+              kasbonPaidMethod: null
+            });
+          }
+
+          saveState();
+          closeSheet('walletSheet');
+          renderAll();
+          showToast('Mutasi kas berhasil disimpan!');
+        });
+
+        document.getElementById('kasbonListContainer').addEventListener('click', (e) => {
+          const waBtn = e.target.closest('[data-wa-kasbon]');
+          if (waBtn) {
+            const tx = state.transactions.find(t => t.id === waBtn.getAttribute('data-wa-kasbon'));
+            if (!tx) return;
+            const msg = `Halo Kak *${tx.target}*, sekadar mengingatkan rincian transaksi *${getCategoryLabel(tx.category)}* pada ${tx.date} sebesar *${formatRp(tx.sellPrice)}*. Terima kasih!`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+            return;
+          }
+
+          const settleBtn = e.target.closest('[data-settle-kasbon]');
+          if (settleBtn) {
+            const tx = state.transactions.find(t => t.id === settleBtn.getAttribute('data-settle-kasbon'));
+            if (!tx) return;
+            settlingTxId = tx.id;
+            document.getElementById('kasbonPayInfo').innerHTML = `Pelunasan kasbon atas nama <strong>${esc(tx.target)}</strong> sebesar <strong class="mono-num" style="color:var(--dana);">${formatRp(tx.sellPrice)}</strong>:`;
+            openSheet('kasbonPaySheet');
+          }
+        });
+
+        function settleKasbon(method) {
+          if (!settlingTxId) return;
+          const tx = state.transactions.find(t => t.id === settlingTxId);
+          if (tx) {
+            tx.kasbonStatus = 'Lunas';
+            tx.kasbonPaidMethod = method;
+            saveState();
+            renderAll();
+            showToast(`Kasbon dilunasi ke ${method}!`);
+          }
+          settlingTxId = null;
+          closeSheet('kasbonPaySheet');
+        }
+
+        document.getElementById('btnSettleCash').addEventListener('click', () => settleKasbon('Tunai'));
+        document.getElementById('btnSettleDana').addEventListener('click', () => settleKasbon('Transfer DANA/QRIS'));
+
+        document.getElementById('recentTxList').addEventListener('click', (e) => {
+          const del = e.target.closest('[data-del-tx]');
+          if (!del) return;
+          const id = del.getAttribute('data-del-tx');
+          if (!confirm('Hapus riwayat transaksi ini? Saldo DANA & Laci akan dihitung ulang otomatis.')) return;
+
+          const backup = [...state.transactions];
+          state.transactions = state.transactions.filter(t => t.id !== id);
+          const check = computeBalances();
+          if (check.dana < 0 || check.cash < 0 || check.availProfit < 0) {
+            state.transactions = backup;
+            showToast('Gagal hapus: transaksi berikutnya bergantung pada saldo ini.');
+            return;
+          }
+          saveState();
+          renderAll();
+          showToast('Transaksi dihapus & saldo disesuaikan.');
+        });
+
+        document.getElementById('btnDownloadIcons').addEventListener('click', () => {
+          downloadPngIcon(192, 'icon-192.png');
+          setTimeout(() => downloadPngIcon(512, 'icon-512.png'), 400);
+          showToast('Mengunduh icon-192.png & icon-512.png...');
+        });
+
+        document.getElementById('btnExportCsv').addEventListener('click', () => {
+          const head = 'ID,Tanggal,Jam,Layanan,Tujuan,Nominal,Biaya App,Modal Keluar,Harga Jual,Profit,Metode,Status Kasbon\n';
+          const rows = state.transactions.map(t =>
+            `"${t.id}","${t.date}","${t.time}","${t.category}","${t.target}",${t.nominal},${t.appFee},${t.modalOut},${t.sellPrice},${t.profit},"${t.payMethod}","${t.kasbonStatus}"`
+          ).join('\n');
+          const blob = new Blob([head + rows], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Laporan_LoketKu_${new Date().toISOString().slice(0, 10)}.csv`;
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('btnExportJson').addEventListener('click', () => {
+          const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Backup_LoketKu_${new Date().toISOString().slice(0, 10)}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+
+        const impIn = document.getElementById('importJsonInput');
+        document.getElementById('btnImportJson').addEventListener('click', () => impIn.click());
+        impIn.addEventListener('change', (e) => {
+          const f = e.target.files[0];
+          if (!f) return;
+          const r = new FileReader();
+          r.onload = (ev) => {
+            try {
+              const d = JSON.parse(ev.target.result);
+              if (!Array.isArray(d.transactions)) throw new Error();
+              state.transactions = d.transactions;
+              saveState();
+              renderAll();
+              showToast('Backup berhasil dipulihkan!');
+            } catch (err) {
+              showToast('File backup tidak valid.');
+            }
+            impIn.value = '';
+          };
+          r.readAsText(f);
+        });
+
+        document.getElementById('btnResetAll').addEventListener('click', () => {
+          if (confirm('Reset seluruh data LoketKu ke Rp 0?')) {
+            state.transactions = [];
+            saveState();
+            renderAll();
+            showToast('Data berhasil direset ke 0.');
+          }
+        });
+
+        document.querySelectorAll('[data-close]').forEach(b => {
+          b.addEventListener('click', () => closeSheet(b.getAttribute('data-close')));
+        });
+        document.querySelectorAll('.sheet-backdrop').forEach(bd => {
+          bd.addEventListener('click', (e) => {
+            if (e.target === bd) bd.classList.remove('open');
+          });
+        });
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        bindEvents();
+        renderAll();
+      });
+    })();
+  </script>
+</body>
+</html>
